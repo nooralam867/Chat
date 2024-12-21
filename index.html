@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Answer Chatbox</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #chatbox {
+            width: 80%;
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        #questions {
+            margin-top: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <h1>Upload Images with Questions</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="images" name="images" multiple accept="image/*">
+            <button type="button" onclick="uploadImages()">Upload</button>
+        </form>
+        <div id="questions"></div>
+    </div>
+
+    <script>
+        function uploadImages() {
+            const formData = new FormData(document.getElementById('uploadForm'));
+            fetch('https://your-vercel-app-url/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.questions) {
+                    const questionsContainer = document.getElementById('questions');
+                    questionsContainer.innerHTML = '';
+                    data.questions.forEach((q, index) => {
+                        const questionDiv = document.createElement('div');
+                        questionDiv.innerHTML = `<p>${q.question}</p>`;
+                        q.options.forEach((option, i) => {
+                            const button = document.createElement('button');
+                            button.innerText = option;
+                            button.onclick = () => checkAnswer(index, i);
+                            questionDiv.appendChild(button);
+                        });
+                        questionsContainer.appendChild(questionDiv);
+                    });
+                }
+            })
+            .catch(error => console.error('Error uploading images:', error));
+        }
+
+        function checkAnswer(questionIndex, optionIndex) {
+            fetch('https://your-vercel-app-url/api/check_answer', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({questionIndex, optionIndex})
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error checking answer:', error));
+        }
+    </script>
+</body>
+</html>
