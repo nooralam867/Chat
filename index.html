@@ -26,10 +26,6 @@
             border: none;
             cursor: pointer;
         }
-        #answer {
-            margin-top: 20px;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -40,7 +36,6 @@
             <button type="button" onclick="uploadImages()">Upload</button>
         </form>
         <div id="questions"></div>
-        <div id="answer"></div>  <!-- Area to display the result (answer) -->
     </div>
 
     <script>
@@ -78,10 +73,7 @@
                 body: JSON.stringify({questionIndex, optionIndex})
             })
             .then(response => response.json())
-            .then(data => {
-                const answerDiv = document.getElementById('answer');
-                answerDiv.innerHTML = `Answer: ${data.message}`;
-            })
+            .then(data => alert(data.message))
             .catch(error => console.error('Error checking answer:', error));
         }
     </script>
